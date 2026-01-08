@@ -1,0 +1,29 @@
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment variables / secrets
+.env
+.env.*
+
+# Logs
+*.log
+
+# OS / editor junk
+.DS_Store
+.vscode/
+.idea/
+
+# Secrets / credentials
+credentials.py
+credentials_dev.py
+db_constants.py
+my-project-trial-427602-72f47703715f.json
+
