@@ -7,6 +7,7 @@ def export_dashboard(df, usdtusd_price):
     df['vol_aum_rolling_30d'] = df['annualized_vol_rolling_30d'] * df['balance']
     df['vol_aum_rolling_60d'] = df['annualized_vol_rolling_60d'] * df['balance']
     df['vol_aum_rolling_90d'] = df['annualized_vol_rolling_90d'] * df['balance']
+    df['vol_aum_rolling_365d'] = df['annualized_vol_rolling_365d'] * df['balance']
     df['vol_aum_rolling_ytd'] = df['annualized_vol_rolling_ytd'] * df['balance']
     # df = df[['pm', 'timestamp','balance', 'itd_pnl', 'itd_pnl_percentage', 'mtd_pnl', 'mtd_pnl_percentage', 'qtd_pnl', 'qtd_pnl_percentage', 'ytd_pnl', 'ytd_pnl_percentage', 'annualized_return', 'sharpe', 'sortino', 'calmar_ratio', 'max_dd', 'curr_dd', 'annualized_vol', 'vol_aum', 'net_exposure_ratio', 'gross_exposure_ratio']]
 
@@ -20,6 +21,9 @@ def export_dashboard(df, usdtusd_price):
 
         # 90-day metrics
         'annualized_return_rolling_90d', 'sharpe_rolling_90d', 'sortino_rolling_90d', 'calmar_rolling_90d', 'annualized_vol_rolling_90d', 'annualized_downside_vol_rolling_90d', 'vol_aum_rolling_90d', 'max_dd_rolling_90d',
+        
+        # 365d metrics
+        'annualized_return_rolling_365d', 'sharpe_rolling_365d', 'sortino_rolling_365d', 'calmar_rolling_365d', 'annualized_vol_rolling_365d', 'annualized_downside_vol_rolling_365d', 'vol_aum_rolling_365d', 'max_dd_rolling_365d',
 
         # ytd metrics
         'annualized_return_rolling_ytd', 'sharpe_rolling_ytd', 'sortino_rolling_ytd', 'calmar_rolling_ytd', 'annualized_vol_rolling_ytd', 'annualized_downside_vol_rolling_ytd', 'vol_aum_rolling_ytd', 'max_dd_rolling_ytd',

@@ -80,7 +80,7 @@ def calculate_metric_for_pm(df_pm, risk_free_rate=0.0):
 
     # ====== Rolling Metrics (30-day, 60-day, 90-day, YTD) ====== #
     # Step 1: 30, 60, 90 day rolling metrics
-    for window in [30, 60, 90]:
+    for window in [30, 60, 90, 365]:
         window_label = f'{window}d'
         if len(df_pm) >= window:
             sub_df = df_pm.iloc[-window:]
@@ -178,34 +178,42 @@ def calculate_metric_for_pm(df_pm, risk_free_rate=0.0):
         f'sharpe_rolling_30d': safe_get_last_value('rolling_sharpe_30d'),
         f'sharpe_rolling_60d': safe_get_last_value('rolling_sharpe_60d'),
         f'sharpe_rolling_90d': safe_get_last_value('rolling_sharpe_90d'),
+        f'sharpe_rolling_365d': safe_get_last_value('rolling_sharpe_365d'),
         f'sharpe_rolling_ytd': safe_get_last_value('rolling_sharpe_ytd'),
         f'sortino_rolling_30d': safe_get_last_value('rolling_sortino_30d'),
         f'sortino_rolling_60d': safe_get_last_value('rolling_sortino_60d'),
         f'sortino_rolling_90d': safe_get_last_value('rolling_sortino_90d'),
+        f'sortino_rolling_365d': safe_get_last_value('rolling_sortino_365d'),
         f'sortino_rolling_ytd': safe_get_last_value('rolling_sortino_ytd'),
         f'annualized_vol_rolling_30d': safe_get_last_value('rolling_annualized_vol_30d'),
         f'annualized_vol_rolling_60d': safe_get_last_value('rolling_annualized_vol_60d'),
         f'annualized_vol_rolling_90d': safe_get_last_value('rolling_annualized_vol_90d'),
+        f'annualized_vol_rolling_365d': safe_get_last_value('rolling_annualized_vol_365d'),
         f'annualized_vol_rolling_ytd': safe_get_last_value('rolling_annualized_vol_ytd'),
         f'annualized_downside_vol_rolling_30d': safe_get_last_value('rolling_annualized_downside_vol_30d'),
         f'annualized_downside_vol_rolling_60d': safe_get_last_value('rolling_annualized_downside_vol_60d'),
         f'annualized_downside_vol_rolling_90d': safe_get_last_value('rolling_annualized_downside_vol_90d'),
+        f'annualized_downside_vol_rolling_365d': safe_get_last_value('rolling_annualized_downside_vol_365d'),
         f'annualized_downside_vol_rolling_ytd': safe_get_last_value('rolling_annualized_downside_vol_ytd'),
         f'max_dd_rolling_30d': safe_get_last_value('rolling_max_dd_30d'),
         f'max_dd_rolling_60d': safe_get_last_value('rolling_max_dd_60d'),
         f'max_dd_rolling_90d': safe_get_last_value('rolling_max_dd_90d'),
+        f'max_dd_rolling_365d': safe_get_last_value('rolling_max_dd_365d'),
         f'max_dd_rolling_ytd': safe_get_last_value('rolling_max_dd_ytd'),
         f'calmar_rolling_30d': safe_get_last_value('rolling_calmar_30d'),
         f'calmar_rolling_60d': safe_get_last_value('rolling_calmar_60d'),
         f'calmar_rolling_90d': safe_get_last_value('rolling_calmar_90d'),
+        f'calmar_rolling_365d': safe_get_last_value('rolling_calmar_365d'),
         f'calmar_rolling_ytd': safe_get_last_value('rolling_calmar_ytd'),
         f'rolling_period_return_30d': safe_get_last_value('rolling_period_return_30d'),
         f'rolling_period_return_60d': safe_get_last_value('rolling_period_return_60d'),
         f'rolling_period_return_90d': safe_get_last_value('rolling_period_return_90d'),
+        f'rolling_period_return_365d': safe_get_last_value('rolling_period_return_365d'),
         f'rolling_period_return_ytd': safe_get_last_value('rolling_period_return_ytd'),
         f'annualized_return_rolling_30d': safe_get_last_value('rolling_annualized_return_30d'),
         f'annualized_return_rolling_60d': safe_get_last_value('rolling_annualized_return_60d'),
         f'annualized_return_rolling_90d': safe_get_last_value('rolling_annualized_return_90d'),
+        f'annualized_return_rolling_365d': safe_get_last_value('rolling_annualized_return_365d'),
         f'annualized_return_rolling_ytd': safe_get_last_value('rolling_annualized_return_ytd'),
     }
 
@@ -269,7 +277,7 @@ def get_metrics():
 
     # Replace infinities with strings
     result_df.replace({np.inf: 'inf', -np.inf: '-inf'}, inplace=True)
-    result_df.fillna(0, inplace=True)
+    result_df.fillna(0, inplace=True) 
     
     return result_df
 
