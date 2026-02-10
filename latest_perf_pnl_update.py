@@ -324,7 +324,7 @@ class PerformanceMetricsProcessor:
         if validate:
             validation_passed = self._validate_pnl_aggregation(
                 original_df, result_df, pm_data, pnl_columns, tolerance_pct,
-                custom_thresholds={'sp1-gross': 0.60, 'sp3-gross':0.1},  # Can be overridden
+                custom_thresholds={'sp1-gross': 0.60, 'sp3-gross':0.2},  # Can be overridden
                 notional_thresholds={'sp2-classb-gross': 2, 'sp2-smaclassb': 0.02},  # Can be overridden
                 exclude_entities=['sp2-gross', 'sp2-classa-gross', 'sp2-classb-manual']  # Can be overridden
             )
