@@ -61,7 +61,9 @@ class PerformanceMetricsProcessor:
     
     def _merge_grouping_data(self, bal_merged_df: pd.DataFrame) -> pd.DataFrame:
         """Merge balance data with PM grouping information."""
-        grouping_df = pd.DataFrame(credentials.PM_DATA)
+        # grouping_df = pd.DataFrame(credentials.PM_DATA)
+        query = "select * from pm_mapping;"
+        grouping_df = db_utils.get_db_table(query=query)
         return bal_merged_df.merge(grouping_df, on='pm', how='left')
     
     def _merge_transfer_data(self, bal_merged_df: pd.DataFrame, transfer_df: pd.DataFrame) -> pd.DataFrame:

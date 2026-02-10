@@ -44,10 +44,24 @@ class PerformanceMetricsProcessor:
     
     def __init__(self):
         self.current_time = self._get_current_time()
+        self._pm_mapping_cache = None  # Cache for pm_mapping data
     
     def _get_current_time(self) -> datetime:
         """Get current UTC time with seconds and microseconds set to 0."""
         return datetime.now(timezone.utc).replace(second=0, microsecond=0)
+        
+    def _get_pm_mapping(self) -> pd.DataFrame:
+        """
+        Get PM mapping data from database with caching.
+        
+        Returns:
+            DataFrame with pm_mapping data
+        """
+        if self._pm_mapping_cache is None:
+            query = "SELECT * FROM pm_mapping;"
+            self._pm_mapping_cache = db_utils.get_db_table(query=query)
+            logging.info("Loaded pm_mapping from database")
+        return self._pm_mapping_cache
     
     def _get_base_data(self, end_time: Optional[datetime] = None) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """Fetch and prepare base dataframes for processing."""
@@ -62,7 +76,7 @@ class PerformanceMetricsProcessor:
     
     def _merge_grouping_data(self, bal_merged_df: pd.DataFrame) -> pd.DataFrame:
         """Merge balance data with PM grouping information."""
-        grouping_df = pd.DataFrame(credentials.PM_DATA)
+        grouping_df = self._get_pm_mapping()
         return bal_merged_df.merge(grouping_df, on='pm', how='left')
     
     def _merge_transfer_data(self, bal_merged_df: pd.DataFrame, transfer_df: pd.DataFrame) -> pd.DataFrame:
@@ -77,7 +91,7 @@ class PerformanceMetricsProcessor:
         return merged_df
 
     def _validate_pnl_aggregation(self, df_before: pd.DataFrame, df_after: pd.DataFrame, 
-                             pm_data: List[dict], pnl_columns: List[str], 
+                             pnl_columns: List[str], 
                              tolerance_pct: float = 0.02, send_alert: bool = True,
                              custom_thresholds: dict = None, exclude_entities: list = None,
                              notional_thresholds: dict = None) -> bool:
@@ -87,7 +101,6 @@ class PerformanceMetricsProcessor:
         Args:
             df_before: DataFrame before aggregation replacement
             df_after: DataFrame after aggregation replacement  
-            pm_data: Hierarchy definition
             pnl_columns: List of PnL columns to validate
             tolerance_pct: Maximum allowed percentage difference (default 2%)
             send_alert: Whether to send alerts for validation failures
@@ -99,7 +112,7 @@ class PerformanceMetricsProcessor:
             bool: True if all validations pass, False otherwise
         """
         validation_passed = True
-        pm_df = pd.DataFrame(pm_data)
+        pm_df = self._get_pm_mapping()
         
         # Set default exclusions, custom thresholds, and notional thresholds
         if exclude_entities is None:
@@ -249,14 +262,13 @@ class PerformanceMetricsProcessor:
     
 
 
-    def _replace_aggregated_pnl(self, df, pm_data, pnl_columns='ITD_PnL', 
+    def _replace_aggregated_pnl(self, df, pnl_columns='ITD_PnL', 
                             validate: bool = True, tolerance_pct: float = 0.02):
         """
         Replace aggregated PnL values with sum of their components
         
         Args:
             df: DataFrame with columns ['pm', 'ITD_PnL'] or ['pm', pnl_columns]
-            pm_data: List of dictionaries defining the hierarchy
             pnl_columns: Name of PnL column (str) or list of PnL columns (list)
             validate: Whether to run validation checks
             tolerance_pct: Maximum allowed percentage difference for validation
@@ -276,9 +288,7 @@ class PerformanceMetricsProcessor:
         if validate:
             original_df = df.copy()
         
-        # Convert pm_data to DataFrame for easier manipulation
-        pm_df = pd.DataFrame(pm_data)
-        
+        pm_df = self._get_pm_mapping()
         # Create mapping from pm to each hierarchy level
         pm_to_hierarchy = pm_df.set_index('pm').to_dict('index')
         
@@ -323,7 +333,7 @@ class PerformanceMetricsProcessor:
         # Run validation if requested
         if validate:
             validation_passed = self._validate_pnl_aggregation(
-                original_df, result_df, pm_data, pnl_columns, tolerance_pct,
+                original_df, result_df, pnl_columns, tolerance_pct,
                 custom_thresholds={'sp1-gross': 0.60, 'sp3-gross':0.2},  # Can be overridden
                 notional_thresholds={'sp2-classb-gross': 2, 'sp2-smaclassb': 0.02},  # Can be overridden
                 exclude_entities=['sp2-gross', 'sp2-classa-gross', 'sp2-classb-manual']  # Can be overridden
@@ -352,7 +362,7 @@ class PerformanceMetricsProcessor:
         cash_mask = df['pm'] == 'cash'
         df.loc[cash_mask, ['ITD_PnL', 'MTD_PnL', 'QTD_PnL', 'YTD_PnL']] = 0
         
-        df = self._replace_aggregated_pnl(df, credentials.PM_DATA, ['ITD_PnL', 'MTD_PnL', 'QTD_PnL', 'YTD_PnL'])
+        df = self._replace_aggregated_pnl(df, ['ITD_PnL', 'MTD_PnL', 'QTD_PnL', 'YTD_PnL'])
         return df
     
     def _calculate_returns(self, nav_df: pd.DataFrame) -> pd.DataFrame:

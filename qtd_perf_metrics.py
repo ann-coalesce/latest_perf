@@ -44,7 +44,9 @@ def get_pm_grouped_bal(ending_time=None):
     '''
     
     balance = db_utils.get_db_table(query=query)
-    grouping_df = pd.DataFrame(credentials.PM_DATA)
+    # grouping_df = pd.DataFrame(credentials.PM_DATA)
+    query = "select * from pm_mapping;"
+    grouping_df = db_utils.get_db_table(query=query)
 
     # Join to enrich with PM group info if needed
     if 'pm_group' in grouping_df.columns:

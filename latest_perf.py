@@ -23,7 +23,9 @@ def job():
     bal_merged_df = get_balance_nav.get_bal_from_nav(end_time=end_time)
     nav_merged_df = get_balance_nav.get_nav(end_time=end_time)
     transfer_df = get_transfers.get_qtd_mtd_transfers(target_date=end_time)
-    grouping_df = pd.DataFrame(credentials.PM_DATA)
+    # grouping_df = pd.DataFrame(credentials.PM_DATA)
+    query = "select * from pm_mapping;"
+    grouping_df = db_utils.get_db_table(query=query)
     bal_merged_df = bal_merged_df.merge(grouping_df, on='pm', how='left')
 
     bal_merged_df = pd.merge(bal_merged_df, transfer_df, on='pm', how='left')
